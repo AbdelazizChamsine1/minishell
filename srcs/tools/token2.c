@@ -6,7 +6,7 @@
 /*   By: achamsin <achamsin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/08 15:45:35 by achamsin          #+#    #+#             */
-/*   Updated: 2025/02/08 15:45:47 by achamsin         ###   ########.fr       */
+/*   Updated: 2025/02/08 15:50:46 by achamsin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,11 @@ t_token	*allocate_token(char *line, int *i)
 {
 	t_token	*token;
 
-	if (!(token = malloc(sizeof(t_token))))
+	token = malloc(sizeof(t_token));
+	if (!(token))
 		return (NULL);
-	if (!(token->str = malloc(sizeof(char) * next_alloc(line, i))))
+	token->str = malloc(sizeof(char) * next_alloc(line, i));
+	if (!(token->str))
 	{
 		free(token);
 		return (NULL);
