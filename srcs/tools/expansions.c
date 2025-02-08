@@ -6,7 +6,7 @@
 /*   By: achamsin <achamsin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 15:29:11 by achamsin          #+#    #+#             */
-/*   Updated: 2025/02/06 15:12:11 by achamsin         ###   ########.fr       */
+/*   Updated: 2025/02/08 15:52:53 by achamsin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,35 @@ int	get_var_len(const char *arg, int pos, t_env *env, int ret)
 	return (i);
 }
 
+int	handle_expansion(const char *arg, int *i, t_env *env, int ret)
+{
+	int	size;
+
+	size = 0;
+	(*i)++;
+	if (!arg[*i])
+	{
+		size++;
+		return (size);
+	}
+	if (arg[*i] == EXPANSION)
+	{
+		size++;
+		return (size);
+	}
+	if ((arg[*i] == '\0' || ft_isalnum(arg[*i]) == 0) && arg[*i] != '?')
+		size++;
+	else
+		size += get_var_len(arg, *i, env, ret);
+	if (ft_isdigit(arg[*i]) == 0 && arg[*i] != '?')
+	{
+		while (arg[*i] && is_env_char(arg[*i]))
+			(*i)++;
+		(*i)--;
+	}
+	return (size);
+}
+
 int	arg_alloc_len(const char *arg, t_env *env, int ret)
 {
 	int	i;
@@ -57,29 +86,7 @@ int	arg_alloc_len(const char *arg, t_env *env, int ret)
 	while (arg[i])
 	{
 		if (arg[i] == EXPANSION)
-		{
-			i++;
-			if (!arg[i])
-			{
-				size++;
-				break ;
-			}
-			if (arg[i] == EXPANSION)
-			{
-				size++;
-				continue ;
-			}
-			if ((arg[i] == '\0' || ft_isalnum(arg[i]) == 0) && arg[i] != '?')
-				size++;
-			else
-				size += get_var_len(arg, i, env, ret);
-			if (ft_isdigit(arg[i]) == 0 && arg[i] != '?')
-			{
-				while (arg[i] && is_env_char(arg[i]))
-					i++;
-				i--;
-			}
-		}
+			size += handle_expansion(arg, &i, env, ret);
 		else
 			size++;
 		i++;

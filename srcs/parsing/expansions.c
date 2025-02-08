@@ -6,7 +6,7 @@
 /*   By: achamsin <achamsin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 15:28:52 by achamsin          #+#    #+#             */
-/*   Updated: 2025/02/06 15:23:33 by achamsin         ###   ########.fr       */
+/*   Updated: 2025/02/08 16:22:24 by achamsin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,32 @@ static void	insert_var(t_expansions *ex, char *arg, t_env *env, int ret)
 		ex->j++;
 }
 
+void	expand_argument(t_expansions *ex, char *arg, t_env *env, int ret)
+{
+	while (arg[ex->j])
+	{
+		if (arg[ex->j] == EXPANSION)
+		{
+			ex->j++;
+			if (!arg[ex->j] || arg[ex->j] == EXPANSION)
+			{
+				ex->new_arg[ex->i++] = '$';
+				if (arg[ex->j] == EXPANSION)
+					continue ;
+				break ;
+			}
+			if ((arg[ex->j] == '\0' || ft_isalnum(arg[ex->j]) == 0)
+				&& arg[ex->j] != '?')
+				ex->new_arg[ex->i++] = '$';
+			else
+				insert_var(ex, arg, env, ret);
+		}
+		else
+			ex->new_arg[ex->i++] = arg[ex->j++];
+	}
+	ex->new_arg[ex->i] = '\0';
+}
+
 char	*expansions(char *arg, t_env *env, int ret)
 {
 	t_expansions	ex;
@@ -57,30 +83,6 @@ char	*expansions(char *arg, t_env *env, int ret)
 		return (NULL);
 	ex.i = 0;
 	ex.j = 0;
-	while (arg[ex.j])
-	{
-		if (arg[ex.j] == EXPANSION)
-		{
-			ex.j++;
-			if (!arg[ex.j])
-			{
-				ex.new_arg[ex.i++] = '$';
-				break ;
-			}
-			if (arg[ex.j] == EXPANSION)
-			{
-				ex.new_arg[ex.i++] = '$';
-				continue ;
-			}
-			if ((arg[ex.j] == '\0' || ft_isalnum(arg[ex.j]) == 0)
-				&& arg[ex.j] != '?')
-				ex.new_arg[ex.i++] = '$';
-			else
-				insert_var(&ex, arg, env, ret);
-		}
-		else
-			ex.new_arg[ex.i++] = arg[ex.j++];
-	}
-	ex.new_arg[ex.i] = '\0';
+	expand_argument(&ex, arg, env, ret);
 	return (ex.new_arg);
 }

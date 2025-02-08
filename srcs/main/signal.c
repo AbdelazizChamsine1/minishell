@@ -6,13 +6,13 @@
 /*   By: achamsin <achamsin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 15:28:46 by achamsin          #+#    #+#             */
-/*   Updated: 2025/02/08 12:16:36 by achamsin         ###   ########.fr       */
+/*   Updated: 2025/02/08 16:17:06 by achamsin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int g_signum;
+int	g_signum;
 
 void	check_signal_if_recieved(int *status)
 {

@@ -6,56 +6,16 @@
 /*   By: achamsin <achamsin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/06 15:08:07 by achamsin          #+#    #+#             */
-/*   Updated: 2025/02/08 14:19:28 by achamsin         ###   ########.fr       */
+/*   Updated: 2025/02/08 16:09:58 by achamsin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void redir_and_exec(t_mini *mini, t_token *token)
+void	execute_commands(t_mini *mini, t_token *token)
 {
-	t_token	*prev;
-	t_token	*next;
-	int		pipe;
+	int	status;
 
-	prev = prev_sep(token, NOSKIP);
-	next = next_sep(token, NOSKIP);
-	pipe = 0;
-
-	if (is_type(prev, TRUNC))
-		redir(mini, token, TRUNC);
-	else if (is_type(prev, APPEND))
-		redir(mini, token, APPEND);
-	else if (is_type(prev, INPUT))
-		input(mini, token);
-	else if (is_type(prev, HEREDOC))
-	{
-		t_token *first_heredoc = prev;
-		while (first_heredoc->prev && first_heredoc->prev->type == HEREDOC)
-			first_heredoc = first_heredoc->prev;
-		process_heredocs(mini, first_heredoc);
-		while (next && next->type == HEREDOC)
-			next = next->next ? next->next->next : NULL;
-	}
-	else if (is_type(prev, PIPE))
-	{
-		pipe = minipipe(mini);
-	}
-
-	if (next && is_type(next, END) == 0 && pipe != 1)
-		redir_and_exec(mini, next->next);
-	if ((is_type(prev, END) || is_type(prev, PIPE) || !prev)
-		&& pipe != 1 && mini->no_exec == 0)
-		exec_cmd(mini, token);
-}
-
-void minishell(t_mini *mini)
-{
-	t_token	*token;
-	int		status;
-
-	token = next_run(mini->start, NOSKIP);
-	token = (is_types(mini->start, "TAIH")) ? mini->start->next : token;
 	while (mini->exit == 0 && token)
 	{
 		mini->charge = 1;
@@ -68,7 +28,8 @@ void minishell(t_mini *mini)
 		waitpid(-1, &status, 0);
 		check_signal_if_recieved(&status);
 		status = WEXITSTATUS(status);
-		mini->ret = (mini->last == 0) ? status : mini->ret;
+		if (mini->last == 0)
+			mini->ret = status;
 		if (mini->parent == 0)
 		{
 			free_token(mini->start);
@@ -79,18 +40,33 @@ void minishell(t_mini *mini)
 	}
 }
 
+void	minishell(t_mini *mini)
+{
+	t_token	*token;
+
+	token = next_run(mini->start, NOSKIP);
+	if (is_types(mini->start, "TAIH"))
+		token = mini->start->next;
+	execute_commands(mini, token);
+}
+
+void	main_init(t_mini *mini)
+{
+	mini->in = dup(STDIN);
+	mini->out = dup(STDOUT);
+	mini->exit = 0;
+	mini->ret = 0;
+	mini->no_exec = 0;
+	mini->start = NULL;
+}
+
 int	main(int ac, char **av, char **env)
 {
 	t_mini	mini;
 
 	(void)ac;
 	(void)av;
-	mini.in = dup(STDIN);
-	mini.out = dup(STDOUT);
-	mini.exit = 0;
-	mini.ret = 0;
-	mini.no_exec = 0;
-	mini.start = NULL;
+	main_init(&mini);
 	if (!env || !env[0])
 		env = create_minimal_env();
 	reset_fds(&mini);
