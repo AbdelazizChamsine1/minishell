@@ -6,7 +6,7 @@
 /*   By: achamsin <achamsin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 15:28:04 by achamsin          #+#    #+#             */
-/*   Updated: 2025/02/08 11:44:20 by achamsin         ###   ########.fr       */
+/*   Updated: 2025/02/08 15:11:31 by achamsin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,16 +79,24 @@ int	magic_box(char *path, char **args, t_mini *mini)
 	return (ret);
 }
 
-char	*path_join(const char *s1, const char *s2)
-{
-	char	*tmp;
-	char	*path;
+// char	*check_dir(char *bin, char *command)
+// {
+// 	DIR				*folder;
+// 	struct dirent	*item;
+// 	char			*path;
 
-	tmp = ft_strjoin(s1, "/");
-	path = ft_strjoin(tmp, s2);
-	ft_memdel(tmp);
-	return (path);
-}
+// 	path = NULL;
+// 	folder = opendir(bin);
+// 	if (!folder)
+// 		return (NULL);
+// 	while ((item = readdir(folder)))
+// 	{
+// 		if (ft_strcmp(item->d_name, command) == 0)
+// 			path = path_join(bin, item->d_name);
+// 	}
+// 	closedir(folder);
+// 	return (path);
+// }
 
 char	*check_dir(char *bin, char *command)
 {
@@ -100,10 +108,15 @@ char	*check_dir(char *bin, char *command)
 	folder = opendir(bin);
 	if (!folder)
 		return (NULL);
-	while ((item = readdir(folder)))
+	item = readdir(folder);
+	while (item != NULL)
 	{
 		if (ft_strcmp(item->d_name, command) == 0)
+		{
 			path = path_join(bin, item->d_name);
+			break ;
+		}
+		item = readdir(folder);
 	}
 	closedir(folder);
 	return (path);

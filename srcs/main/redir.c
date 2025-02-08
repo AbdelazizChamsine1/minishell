@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redir.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: achamsin <achamsin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 15:28:39 by achamsin          #+#    #+#             */
-/*   Updated: 2025/01/31 20:48:47 by marvin           ###   ########.fr       */
+/*   Updated: 2025/02/08 15:21:29 by achamsin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void	redir(t_mini *mini, t_token *token, int type)
 	}
 }
 
-void input(t_mini *mini, t_token *token)
+void	input(t_mini *mini, t_token *token)
 {
 	ft_close(mini->fdin);
 	mini->fdin = open(token->str, O_RDONLY, S_IRWXU);
@@ -61,27 +61,29 @@ void input(t_mini *mini, t_token *token)
 	}
 }
 
+void	child_minipipe(t_mini *mini, int pipefd[2])
+{
+	ft_close(pipefd[1]);
+	dup2(pipefd[0], STDIN);
+	mini->pipin = pipefd[0];
+	mini->pid = -1;
+	mini->parent = 0;
+	mini->no_exec = 0;
+}
+
 int	minipipe(t_mini *mini)
 {
 	pid_t	pid;
 	int		pipefd[2];
 
 	if (pipe(pipefd) == -1)
-	{
-		perror("minishell");
-		return (1);
-	}
+		return (perror("minishell"), 1);
 	signal(SIGINT, SIG_IGN);
 	pid = fork();
 	if (pid == 0)
 	{
 		signal(SIGINT, SIG_DFL);
-		ft_close(pipefd[1]);
-		dup2(pipefd[0], STDIN);
-		mini->pipin = pipefd[0];
-		mini->pid = -1;
-		mini->parent = 0;
-		mini->no_exec = 0;
+		child_minipipe(mini, pipefd);
 		return (2);
 	}
 	else

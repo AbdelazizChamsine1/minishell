@@ -6,20 +6,17 @@
 /*   By: achamsin <achamsin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 15:28:15 by achamsin          #+#    #+#             */
-/*   Updated: 2025/02/06 14:33:19 by achamsin         ###   ########.fr       */
+/*   Updated: 2025/02/08 14:53:17 by achamsin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char	**cmd_tab(t_token *start)
+static int	get_tab_size(t_token *start)
 {
 	t_token	*token;
-	char	**tab;
 	int		i;
 
-	if (!start)
-		return (NULL);
 	token = start->next;
 	i = 2;
 	while (token && token->type < TRUNC)
@@ -27,18 +24,37 @@ char	**cmd_tab(t_token *start)
 		token = token->next;
 		i++;
 	}
-	tab = malloc(sizeof(char *) * i);
-	if (!(tab))
-		return (NULL);
+	return (i);
+}
+
+static void	populate_tab(t_token *start, char **tab)
+{
+	t_token	*token;
+	int		i;
+
 	token = start->next;
-	tab[0] = start->str;
 	i = 1;
+	tab[0] = start->str;
 	while (token && token->type < TRUNC)
 	{
 		tab[i++] = token->str;
 		token = token->next;
 	}
 	tab[i] = NULL;
+}
+
+char	**cmd_tab(t_token *start)
+{
+	int		tab_size;
+	char	**tab;
+
+	if (!start)
+		return (NULL);
+	tab_size = get_tab_size(start);
+	tab = malloc(sizeof(char *) * tab_size);
+	if (!tab)
+		return (NULL);
+	populate_tab(start, tab);
 	return (tab);
 }
 

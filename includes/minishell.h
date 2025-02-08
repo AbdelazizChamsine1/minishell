@@ -6,7 +6,7 @@
 /*   By: achamsin <achamsin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 15:40:21 by achamsin          #+#    #+#             */
-/*   Updated: 2025/02/08 11:32:54 by achamsin         ###   ########.fr       */
+/*   Updated: 2025/02/08 15:47:40 by achamsin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,7 +158,7 @@ t_env			*find_env_variable(t_env *env, const char *var, size_t len);
 char			*extract_env_path(const char *env_value, size_t len);
 void			add_to_env(char *arg, t_env *env, t_env *secret);
 int				is_in_env(t_env *env, char *args);
-
+char			*path_join(const char *s1, const char *s2);
 /*
 ** FD TOOLS
 */
@@ -180,6 +180,9 @@ void			free_tab(char **tab);
 t_token			*next_sep(t_token *token, int skip);
 t_token			*prev_sep(t_token *token, int skip);
 t_token			*next_run(t_token *token, int skip);
+t_token			*allocate_token(char *line, int *i);
+void			process_token_content(char *line, int *i, t_token *token);
+int				next_alloc(char *line, int *i);
 
 /*
 ** TYPE TOOLS
@@ -189,6 +192,7 @@ int				is_types(t_token *token, char *types);
 int				has_type(t_token *token, int type);
 int				has_pipe(t_token *token);
 t_token			*next_type(t_token *token, int type, int skip);
+int				quote_check(t_mini *mini, char **line);
 
 /*
 ** EXPANSIONS
@@ -206,20 +210,30 @@ void			setup_signals(void);
 void			setup_heredoc_signals(void);
 void			sigint_handler(int signum);
 void			check_signal_if_recieved(int *status);
-void			sigint_handler2(int signum);
+void			heredoc_signals(int signum);
 
 /*
 ** HEREDOC
 */
-
+char			*expand_return_status(int last_ret);
 char			*expand_heredoc_line(char *line, t_env *env, int last_ret,
 					int expand_variables);
-void			free_pipe_fds(int **pipe_fds, int count);
+int				**init_heredoc_pipes(int count, t_mini *mini);
+void			cleanup_pipes(int **pipe_fds, int count);
+int				count_heredocs(t_token *token);
+int				setup_final_input(int fd, t_mini *mini);
 void			process_multiple_heredocs(t_mini *mini, t_token *token);
+void			process_heredocs(t_mini *mini, t_token *token);
+void			process_heredoc_line(char *line, int write_fd, t_mini *mini,
+					int expand_variables);
 int				heredoc_to_pipe(t_mini *mini, t_token *delimiter_token,
 					int write_fd);
-char			*expand_heredoc_line(char *line, t_env *env, int last_ret,
-					int expand_variables);
+void			process_heredoc_pipes(t_mini *mini, t_token *token,
+					int **pipe_fds, int heredoc_count);
+char			*process_heredoc_expansion(char *line, t_env *env, int last_ret,
+					int expand);
+int				process_single_heredoc(t_mini *mini, t_token *token,
+					int write_fd);
 
 extern int g_signum;
 

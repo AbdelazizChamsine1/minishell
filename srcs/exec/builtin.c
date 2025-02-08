@@ -6,7 +6,7 @@
 /*   By: achamsin <achamsin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 15:28:09 by achamsin          #+#    #+#             */
-/*   Updated: 2025/02/06 12:00:23 by achamsin         ###   ########.fr       */
+/*   Updated: 2025/02/08 12:00:38 by achamsin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,4 +47,15 @@ int	exec_builtin(char **args, t_mini *mini)
 	if (ft_strcmp(args[0], "unset") == 0)
 		ft_unset(args, mini);
 	return (result);
+}
+
+char	*path_join(const char *s1, const char *s2)
+{
+	char	*tmp;
+	char	*path;
+
+	tmp = ft_strjoin(s1, "/");
+	path = ft_strjoin(tmp, s2);
+	ft_memdel(tmp);
+	return (path);
 }

@@ -6,7 +6,7 @@
 /*   By: achamsin <achamsin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/06 15:08:07 by achamsin          #+#    #+#             */
-/*   Updated: 2025/02/06 15:11:43 by achamsin         ###   ########.fr       */
+/*   Updated: 2025/02/08 14:19:28 by achamsin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void redir_and_exec(t_mini *mini, t_token *token)
 		t_token *first_heredoc = prev;
 		while (first_heredoc->prev && first_heredoc->prev->type == HEREDOC)
 			first_heredoc = first_heredoc->prev;
-		process_multiple_heredocs(mini, first_heredoc);
+		process_heredocs(mini, first_heredoc);
 		while (next && next->type == HEREDOC)
 			next = next->next ? next->next->next : NULL;
 	}

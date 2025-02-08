@@ -3,105 +3,103 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: achamsin <achamsin@student.42.fr>          +#+  +:+       +#+        */
+/*   By: your_login <your_login@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/06 13:49:30 by achamsin          #+#    #+#             */
-/*   Updated: 2025/02/06 13:49:30 by achamsin         ###   ########.fr       */
+/*   Created: 2024/02/08 10:00:00 by your_login        #+#    #+#             */
+/*   Updated: 2024/02/08 10:00:00 by your_login       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	allocate_pipes(int ***pipe_fds, int count, t_mini *mini)
+static int	init_pipe(int **pipe_fds, int i)
 {
+	pipe_fds[i] = malloc(sizeof(int) * 2);
+	if (!pipe_fds[i])
+		return (0);
+	if (pipe(pipe_fds[i]) == -1)
+	{
+		cleanup_pipes(pipe_fds, i);
+		return (0);
+	}
+	return (1);
+}
+
+int	**init_heredoc_pipes(int count, t_mini *mini)
+{
+	int	**pipe_fds;
 	int	i;
 
-	*pipe_fds = malloc(sizeof(int *) * count);
+	pipe_fds = malloc(sizeof(int *) * count);
+	if (!pipe_fds)
+	{
+		mini->ret = 1;
+		mini->no_exec = 1;
+		return (NULL);
+	}
 	i = 0;
 	while (i < count)
 	{
-		(*pipe_fds)[i] = malloc(sizeof(int) * 2);
-		if (pipe((*pipe_fds)[i]) == -1)
+		if (!init_pipe(pipe_fds, i))
 		{
-			perror("minishell: pipe error");
-			free_pipe_fds(*pipe_fds, i);
 			mini->ret = 1;
 			mini->no_exec = 1;
-			return ;
+			return (NULL);
 		}
 		i++;
 	}
+	return (pipe_fds);
 }
 
-void	process_multiple_heredocs(t_mini *mini, t_token *token)
+static int	handle_heredoc_input(char *line, t_token *delim_token, t_mini *mini,
+	int write_fd)
 {
-	t_token	*current;
-	int		heredoc_count;
-	int		**pipe_fds;
-	int		i;
-
-	current = token;
-	heredoc_count = 0;
-	while (current && current->type == HEREDOC)
+	if (g_signum == SIGINT)
 	{
-		heredoc_count++;
-		if (current->next)
-			current = current->next->next;
-		else
-			current = NULL;
+		free(line);
+		mini->ret = 130;
+		return (0);
 	}
-	allocate_pipes(&pipe_fds, heredoc_count, mini);
-	i = 0;
-	current = token;
-	while (i < heredoc_count && current)
+	if (!line)
 	{
-		if (!heredoc_to_pipe(mini, current->next, pipe_fds[i][1]))
-			close(pipe_fds[i][1]);
-		if (current->next)
-			current = current->next->next;
-		else
-			current = NULL;
-		i++;
+		ft_putstr_fd("minishell: warning: here-document at EOF\n", 2);
+		return (0);
 	}
-	if (heredoc_count > 0 && dup2(pipe_fds[heredoc_count - 1][0], STDIN_FILENO) == -1)
+	if (ft_strcmp(line, delim_token->str) == 0)
 	{
-		perror("minishell: dup2 error");
-		mini->ret = 1;
-		mini->no_exec = 1;
+		free(line);
+		setup_signals();
+		return (1);
 	}
-	free_pipe_fds(pipe_fds, heredoc_count);
+	process_heredoc_line(line, write_fd, mini,
+		(delim_token->quote_type == 0));
+	return (2);
 }
 
-int	heredoc_to_pipe(t_mini *mini, t_token *delimiter_token, int write_fd)
+int	heredoc_to_pipe(t_mini *mini, t_token *delim_token, int write_fd)
 {
 	char	*line;
-	char	*expanded_line;
-	char	*delimiter;
-	int		expand_variables;
+	int		result;
 
 	setup_heredoc_signals();
-	expand_variables = (delimiter_token->quote_type == 0);
-	delimiter = ft_strdup(delimiter_token->str);
+	if (!delim_token || !delim_token->str)
+		return (0);
 	while (1)
 	{
 		line = readline("");
-		if (g_signum == SIGINT)
-			return (free(line), free(delimiter), mini->ret = 130, 0);
-		if (!line)
-		{
-			ft_putstr_fd("minishell: warning: here-document delimited by EOF\n", 2);
-			return (free(delimiter), 0);
-		}
-		if (ft_strcmp(line, delimiter) == 0)
-			return (free(line), free(delimiter), 1);
-		if (expand_variables)
-		{
-			expanded_line = expand_heredoc_line(line, mini->env, mini->ret, 1);
-			ft_putendl_fd(expanded_line, write_fd);
-			free(expanded_line);
-		}
-		else
-			ft_putendl_fd(line, write_fd);
-		free(line);
+		result = handle_heredoc_input(line, delim_token, mini, write_fd);
+		if (result == 0 || result == 1)
+			return (result);
 	}
+}
+
+int	process_single_heredoc(t_mini *mini, t_token *token, int write_fd)
+{
+	if (!heredoc_to_pipe(mini, token, write_fd))
+	{
+		close(write_fd);
+		return (1);
+	}
+	close(write_fd);
+	return (0);
 }

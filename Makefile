@@ -73,13 +73,13 @@ BUILTINS = cd echo env exit export pwd unset
 
 ENV = env get_env sort_env shlvl env2
 
-EXEC = bin builtin exec heredoc heredoc_utils
+EXEC = bin builtin exec heredoc heredoc_utils heredoc_utils2 heredoc_utils3
 
-MAIN = minishell redir signal
+MAIN = minishell redir signal signals_handler
 
 PARSING = line tokens expansions
 
-TOOLS = fd free token type expansions parsing
+TOOLS = fd free token token2 type expansions parsing
 
 SRC = $(addsuffix .c, $(addprefix srcs/builtins/, $(BUILTINS))) \
       $(addsuffix .c, $(addprefix srcs/env/, $(ENV))) \

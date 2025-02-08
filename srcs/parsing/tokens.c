@@ -6,7 +6,7 @@
 /*   By: achamsin <achamsin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 15:29:05 by achamsin          #+#    #+#             */
-/*   Updated: 2025/02/06 15:17:57 by achamsin         ###   ########.fr       */
+/*   Updated: 2025/02/08 15:47:27 by achamsin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,33 +89,11 @@ int	next_alloc(char *line, int *i)
 t_token	*next_token(char *line, int *i)
 {
 	t_token	*token;
-	int		j;
-	char	c;
 
-	j = 0;
-	c = ' ';
-	if (!(token = malloc(sizeof(t_token)))
-		|| !(token->str = malloc(sizeof(char) * next_alloc(line, i))))
+	token = allocate_token(line, i);
+	if (!token)
 		return (NULL);
-	token->quote_type = 0;
-	while (line[*i] && (line[*i] != ' ' || c != ' '))
-	{
-		if (c == ' ' && (line[*i] == '\'' || line[*i] == '\"'))
-		{
-			c = line[(*i)++];
-			token->quote_type = 1;
-		}
-		else if (c != ' ' && line[*i] == c)
-		{
-			c = ' ';
-			(*i)++;
-		}
-		else if (line[*i] == '\\' && (*i)++)
-			token->str[j++] = line[(*i)++];
-		else
-			token->str[j++] = line[(*i)++];
-	}
-	token->str[j] = '\0';
+	process_token_content(line, i, token);
 	return (token);
 }
 

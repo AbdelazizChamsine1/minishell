@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   token.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: achamsin <achamsin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 15:29:39 by achamsin          #+#    #+#             */
-/*   Updated: 2025/01/25 16:21:28 by oismail          ###   ########.fr       */
+/*   Updated: 2025/02/08 15:28:29 by achamsin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,4 +56,17 @@ t_token	*next_run(t_token *token, int skip)
 		}
 	}
 	return (token);
+}
+
+int	quote_check(t_mini *mini, char **line)
+{
+	if (quotes(*line, 2147483647))
+	{
+		ft_putendl_fd("minishell: syntax error with open quotes", STDERR);
+		ft_memdel(*line);
+		mini->ret = 2;
+		mini->start = NULL;
+		return (1);
+	}
+	return (0);
 }

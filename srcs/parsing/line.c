@@ -6,7 +6,7 @@
 /*   By: achamsin <achamsin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 16:39:15 by oismail           #+#    #+#             */
-/*   Updated: 2025/02/06 15:16:24 by achamsin         ###   ########.fr       */
+/*   Updated: 2025/02/08 15:29:41 by achamsin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,27 @@ char	*space_alloc(char *line)
 	return (new);
 }
 
+int	handle_special_chars(char *new, char *line, int *i, int *j)
+{
+	if (quotes(line, *i) != 2 && line[*i] == '$' && *i && line[*i - 1] != '\\')
+	{
+		new[(*j)++] = (char)(-line[(*i)++]);
+		return (1);
+	}
+	if (quotes(line, *i) == 0 && is_sep(line, *i))
+	{
+		new[(*j)++] = ' ';
+		new[(*j)++] = line[(*i)++];
+		if (quotes(line, *i) == 0 && line[*i] == '<')
+			new[(*j)++] = line[(*i)++];
+		else if (quotes(line, *i) == 0 && line[*i] == '>')
+			new[(*j)++] = line[(*i)++];
+		new[(*j)++] = ' ';
+		return (1);
+	}
+	return (0);
+}
+
 char	*space_line(char *line)
 {
 	char	*new;
@@ -43,37 +64,12 @@ char	*space_line(char *line)
 	new = space_alloc(line);
 	while (new && line[i])
 	{
-		if (quotes(line, i) != 2 && line[i] == '$' && i && line[i - 1] != '\\')
-			new[j++] = (char)(-line[i++]);
-		else if (quotes(line, i) == 0 && is_sep(line, i))
-		{
-			new[j++] = ' ';
-			new[j++] = line[i++];
-			if (quotes(line, i) == 0 && line[i] == '<')
-				new[j++] = line[i++];
-			else if (quotes(line, i) == 0 && line[i] == '>')
-				new[j++] = line[i++];
-			new[j++] = ' ';
-		}
-		else
+		if (!handle_special_chars(new, line, &i, &j))
 			new[j++] = line[i++];
 	}
 	new[j] = '\0';
 	ft_memdel(line);
 	return (new);
-}
-
-int	quote_check(t_mini *mini, char **line)
-{
-	if (quotes(*line, 2147483647))
-	{
-		ft_putendl_fd("minishell: syntax error with open quotes", STDERR);
-		ft_memdel(*line);
-		mini->ret = 2;
-		mini->start = NULL;
-		return (1);
-	}
-	return (0);
 }
 
 ssize_t	read_stat_file(char *buffer, size_t buffer_size)
