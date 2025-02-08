@@ -6,7 +6,7 @@
 /*   By: achamsin <achamsin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 15:40:21 by achamsin          #+#    #+#             */
-/*   Updated: 2025/02/06 14:49:07 by achamsin         ###   ########.fr       */
+/*   Updated: 2025/02/08 11:32:54 by achamsin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,6 +154,10 @@ void			increment_shell_level(t_env *env);
 size_t			size_env(t_env *lst);
 char			**create_minimal_env(void);
 int				init_env_helper(t_env **env, char *value);
+t_env			*find_env_variable(t_env *env, const char *var, size_t len);
+char			*extract_env_path(const char *env_value, size_t len);
+void			add_to_env(char *arg, t_env *env, t_env *secret);
+int				is_in_env(t_env *env, char *args);
 
 /*
 ** FD TOOLS

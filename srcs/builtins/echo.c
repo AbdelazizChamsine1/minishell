@@ -6,7 +6,7 @@
 /*   By: achamsin <achamsin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 11:39:48 by achamsin          #+#    #+#             */
-/*   Updated: 2025/02/06 15:25:31 by achamsin         ###   ########.fr       */
+/*   Updated: 2025/02/08 11:38:47 by achamsin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,4 +60,3 @@ int	ft_echo(char **args)
 	print_args(args, i, n_option);
 	return (SUCCESS);
 }
-

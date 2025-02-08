@@ -6,7 +6,7 @@
 /*   By: achamsin <achamsin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 11:39:39 by achamsin          #+#    #+#             */
-/*   Updated: 2025/01/04 11:34:36 by achamsin         ###   ########.fr       */
+/*   Updated: 2025/02/08 11:39:32 by achamsin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,32 +27,12 @@ static void	print_error(char **args)
 
 static char	*get_env_path(t_env *env, const char *var, size_t len)
 {
-	char	*oldpwd;
-	int		i;
-	int		j;
-	int		s_alloc;
+	t_env	*found_env;
 
-	while (env && env->next != NULL)
-	{
-		if (ft_strncmp(env->value, var, len) == 0)
-		{
-			s_alloc = ft_strlen(env->value) - len;
-			oldpwd = malloc(sizeof(char) * s_alloc + 1);
-			if (!(oldpwd))
-				return (NULL);
-			i = 0;
-			j = 0;
-			while (env->value[i++])
-			{
-				if (i > (int)len)
-					oldpwd[j++] = env->value[i];
-			}
-			oldpwd[j] = '\0';
-			return (oldpwd);
-		}
-		env = env->next;
-	}
-	return (NULL);
+	found_env = find_env_variable(env, var, len);
+	if (!found_env)
+		return (NULL);
+	return (extract_env_path(found_env->value, len));
 }
 
 static int	update_oldpwd(t_env *env)

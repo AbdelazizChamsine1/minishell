@@ -6,7 +6,7 @@
 /*   By: achamsin <achamsin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 15:28:04 by achamsin          #+#    #+#             */
-/*   Updated: 2025/02/06 15:02:02 by achamsin         ###   ########.fr       */
+/*   Updated: 2025/02/08 11:44:20 by achamsin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,10 +40,26 @@ int	error_message(char *path)
 	return (ret);
 }
 
-int	magic_box(char *path, char **args, t_mini *mini)
+static void	execute_child_process(char *path, char **args, t_mini *mini)
 {
 	char	**environ;
 	char	*ptr;
+	int		ret;
+
+	setup_signals();
+	ptr = env_to_str(mini->env);
+	environ = ft_split(ptr, '\n');
+	ft_memdel(ptr);
+	if (ft_strchr(path, '/') != NULL)
+		execve(path, args, environ);
+	ret = error_message(path);
+	free_tab(environ);
+	free_token(mini->start);
+	exit(ret);
+}
+
+int	magic_box(char *path, char **args, t_mini *mini)
+{
 	int		ret;
 	pid_t	pid;
 
@@ -51,21 +67,13 @@ int	magic_box(char *path, char **args, t_mini *mini)
 	signal(SIGINT, SIG_IGN);
 	pid = fork();
 	if (pid == 0)
-	{
-		setup_signals();
-		ptr = env_to_str(mini->env);
-		environ = ft_split(ptr, '\n');
-		ft_memdel(ptr);
-		if (ft_strchr(path, '/') != NULL)
-			execve(path, args, environ);
-		ret = error_message(path);
-		free_tab(environ);
-		free_token(mini->start);
-		exit(ret);
-	}
+		execute_child_process(path, args, mini);
 	else
 		waitpid(pid, &ret, 0);
-	ret = WIFEXITED(ret) ? WEXITSTATUS(ret) : 1;
+	if (WIFEXITED(ret))
+		ret = WEXITSTATUS(ret);
+	else
+		ret = 1;
 	check_signal_if_recieved(&ret);
 	setup_signals();
 	return (ret);

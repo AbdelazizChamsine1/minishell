@@ -6,7 +6,7 @@
 /*   By: achamsin <achamsin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/06 14:47:19 by achamsin          #+#    #+#             */
-/*   Updated: 2025/02/06 14:49:24 by achamsin         ###   ########.fr       */
+/*   Updated: 2025/02/08 11:32:29 by achamsin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,4 +52,24 @@ char	**create_minimal_env(void)
 	env[3] = ft_strdup(str);
 	env[4] = NULL;
 	return (env);
+}
+
+int	is_in_env(t_env *env, char *args)
+{
+	char	var_name[BUFF_SIZE];
+	char	env_name[BUFF_SIZE];
+
+	get_env_name(var_name, args);
+	while (env)
+	{
+		get_env_name(env_name, env->value);
+		if (ft_strcmp(var_name, env_name) == 0)
+		{
+			ft_memdel(env->value);
+			env->value = ft_strdup(args);
+			return (1);
+		}
+		env = env->next;
+	}
+	return (0);
 }
