@@ -86,6 +86,9 @@ int	ft_cd(char **args, t_env *env)
 
 	if (!args[1])
 		return (go_to_path(0, env));
+	if (args[2])
+		return ((ft_putendl_fd("minishell: cd: too many arguments", STDERR)
+				, 1));
 	if (ft_strcmp(args[1], "~") == 0)
 		return (go_to_path(0, env));
 	if (ft_strcmp(args[1], "-") == 0)

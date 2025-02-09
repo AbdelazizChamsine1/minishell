@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-static int	print_error(int error, const char *arg, t_mini *mini)
+static int	print_error(int error, const char *arg)
 {
 	int		i;
 
@@ -21,7 +21,6 @@ static int	print_error(int error, const char *arg, t_mini *mini)
 	else if (error == 0 || error == -3)
 	{
 		ft_putstr_fd("export: not a valid identifier: ", STDERR);
-		mini->ret = 1;
 	}
 	i = 0;
 	while (arg[i] && (arg[i] != '=' || error == -3))
@@ -78,7 +77,7 @@ static int	handle_invalid_export(t_mini *mini, char *arg)
 		error_ret = -3;
 	if (error_ret <= 0)
 	{
-		print_error(error_ret, arg, mini);
+		print_error(error_ret, arg);
 		mini->ret = 1;
 		return (1);
 	}
