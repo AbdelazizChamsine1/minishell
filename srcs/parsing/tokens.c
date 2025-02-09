@@ -34,6 +34,25 @@ void	type_arg(t_token *token, int separator)
 		token->type = ARG;
 }
 
+void	update_token_links(t_token *token, t_token *prev, t_mini *mini)
+{
+	token->prev->next = token->next;
+	if (token->next)
+		token->next->prev = token->prev;
+	token->prev = prev;
+	if (prev)
+		token->next = prev->next;
+	else
+		token->next = mini->start;
+	if (!prev)
+		prev = token;
+	if (prev->next)
+		prev->next->prev = token;
+	prev->next = token;
+	if (mini->start->prev)
+		mini->start = mini->start->prev;
+}
+
 void	squish_args(t_mini *mini)
 {
 	t_token	*token;
@@ -47,15 +66,7 @@ void	squish_args(t_mini *mini)
 		{
 			while (is_last_valid_arg(prev) == 0)
 				prev = prev->prev;
-			token->prev->next = token->next;
-			if (token->next)
-				token->next->prev = token->prev;
-			token->prev = prev;
-			token->next = (prev) ? prev->next : mini->start;
-			prev = (prev) ? prev : token;
-			prev->next->prev = token;
-			prev->next = (mini->start->prev) ? prev->next : token;
-			mini->start = (mini->start->prev) ? mini->start->prev : mini->start;
+			update_token_links(token, prev, mini);
 		}
 		token = token->next;
 	}
@@ -84,17 +95,6 @@ int	next_alloc(char *line, int *i)
 			j++;
 	}
 	return (j - count + 2);
-}
-
-t_token	*next_token(char *line, int *i)
-{
-	t_token	*token;
-
-	token = allocate_token(line, i);
-	if (!token)
-		return (NULL);
-	process_token_content(line, i, token);
-	return (token);
 }
 
 t_token	*get_tokens(char *line)

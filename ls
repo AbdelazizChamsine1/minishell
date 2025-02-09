@@ -1,3 +1,0 @@
-jbjc
-nlen
-andc

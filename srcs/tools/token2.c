@@ -29,6 +29,26 @@ t_token	*allocate_token(char *line, int *i)
 	return (token);
 }
 
+t_token	*next_token(char *line, int *i)
+{
+	t_token	*token;
+
+	token = allocate_token(line, i);
+	if (!token)
+		return (NULL);
+	process_token_content(line, i, token);
+	return (token);
+}
+
+int	print_syntax_error(t_mini *mini, char *msg)
+{
+	ft_putstr_fd("bash: syntax error near unexpected token `", STDERR);
+	ft_putstr_fd(msg, STDERR);
+	ft_putendl_fd("'", STDERR);
+	mini->ret = 2;
+	return (0);
+}
+
 void	process_token_content(char *line, int *i, t_token *token)
 {
 	int		j;

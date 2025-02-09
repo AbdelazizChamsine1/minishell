@@ -101,6 +101,7 @@ void			redir(t_mini *mini, t_token *token, int type);
 void			input(t_mini *mini, t_token *token);
 int				minipipe(t_mini *mini);
 char			*expansions(char *arg, t_env *env, int ret);
+void			redir_and_exec(t_mini *mini, t_token *token);
 
 /*
 ** EXEC
@@ -136,6 +137,7 @@ int				quotes(char *line, int index);
 void			type_arg(t_token *token, int separator);
 int				is_sep(char *line, int i);
 int				ignore_sep(char *line, int i);
+int				print_syntax_error(t_mini *mini, char *msg);
 
 /*
 ** ENV
@@ -183,6 +185,7 @@ t_token			*next_run(t_token *token, int skip);
 t_token			*allocate_token(char *line, int *i);
 void			process_token_content(char *line, int *i, t_token *token);
 int				next_alloc(char *line, int *i);
+t_token			*next_token(char *line, int *i);
 
 /*
 ** TYPE TOOLS

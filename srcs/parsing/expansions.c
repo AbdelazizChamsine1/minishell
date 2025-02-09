@@ -33,7 +33,8 @@ static void	insert_var(t_expansions *ex, char *arg, t_env *env, int ret)
 		return ;
 	}
 	env_value = get_var_value(arg, ex->j, env, ret);
-	ex->i += env_value ? varlcpy(ex->new_arg, env_value, ex->i) : 0;
+	if (env_value)
+		ex->i += varlcpy(ex->new_arg, env_value, ex->i);
 	ft_memdel(env_value);
 	if (arg[ex->j] == '?')
 		ex->j++;

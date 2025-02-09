@@ -47,36 +47,6 @@ static int	get_lvl(const char *str)
 	return (num * sign);
 }
 
-// void	increment_shell_level(t_env *env)
-// {
-// 	int		shell_level;
-// 	char	env_name[BUFF_SIZE];
-// 	char	*shlvl;
-// 	char	*shell_level_value;
-
-// 	shell_level_value = get_env_value("SHLVL", env);
-// 	if (!shell_level_value || ft_strcmp(shell_level_value, "") == 0)
-// 	{
-// 		ft_memdel(shell_level_value);
-// 		return ;
-// 	}
-// 	shell_level = get_lvl(shell_level_value) + 1;
-// 	ft_memdel(shell_level_value);
-// 	while (env)
-// 	{
-// 		get_env_name(env_name, env->value);
-// 		if (ft_strcmp("SHLVL", env_name) == 0)
-// 		{
-// 			ft_memdel(env->value);
-// 			shlvl = ft_itoa(shell_level);
-// 			env->value = ft_strjoin("SHLVL=", shlvl);
-// 			ft_memdel(shlvl);
-// 			return ;
-// 		}
-// 		env = env->next;
-// 	}
-// }
-
 void	update_shell_level_in_env(t_env *env, int shell_level)
 {
 	char	env_name[BUFF_SIZE];

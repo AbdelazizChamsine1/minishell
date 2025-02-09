@@ -79,28 +79,16 @@ int	check_line(t_mini *mini, t_token *token)
 {
 	while (token)
 	{
-		if (is_types(token, "TAIH")
-			&& (!token->next || is_types(token->next, "TAIHPE")))
+		if (is_types(token, "TAIH") && (!token->next
+				|| is_types(token->next, "TAIHPE")))
 		{
-			ft_putstr_fd("bash: syntax error near unexpected token `", STDERR);
 			if (token->next)
-    			ft_putstr_fd(token->next->str, STDERR);
-			if (!token->next)
-    			ft_putstr_fd("newline", STDERR);
-			ft_putendl_fd("'", STDERR);
-			mini->ret = 2;
-			return (0);
+				return (print_syntax_error(mini, token->next->str));
+			return (print_syntax_error(mini, "newline"));
 		}
-		if (is_types(token, "PE")
-			&& (!token->prev || !token->next
+		if (is_types(token, "PE") && (!token->prev || !token->next
 				|| is_types(token->prev, "TAIHPE")))
-		{
-			ft_putstr_fd("bash: syntax error near unexpected token `", STDERR);
-			ft_putstr_fd(token->str, STDERR);
-			ft_putendl_fd("'", STDERR);
-			mini->ret = 2;
-			return (0);
-		}
+			return (print_syntax_error(mini, token->str));
 		token = token->next;
 	}
 	return (1);

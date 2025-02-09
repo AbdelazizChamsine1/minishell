@@ -75,7 +75,7 @@ ENV = env get_env sort_env shlvl env2
 
 EXEC = bin builtin exec heredoc heredoc_utils heredoc_utils2 heredoc_utils3
 
-MAIN = minishell redir signal signals_handler
+MAIN = minishell redir redir2 signal signals_handler
 
 PARSING = line tokens expansions
 
