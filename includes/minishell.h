@@ -13,7 +13,7 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-# include "libft.h"
+# include "../libft/libft.h"
 # include <stdlib.h>
 # include <unistd.h>
 # include <stdio.h>
@@ -238,6 +238,6 @@ char			*process_heredoc_expansion(char *line, t_env *env, int last_ret,
 int				process_single_heredoc(t_mini *mini, t_token *token,
 					int write_fd);
 
-extern int g_signum;
+extern int	g_signum;
 
 #endif

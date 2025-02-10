@@ -1,65 +1,55 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: achamsin <achamsin@student.42.fr>          +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2024/06/11 18:26:24 by achamsin          #+#    #+#              #
+#    Updated: 2024/06/20 13:55:43 by achamsin         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
+SRCS = ft_isalpha.c ft_isdigit.c ft_isalnum.c ft_isascii.c \
+       ft_isprint.c ft_strlen.c ft_memset.c ft_bzero.c \
+       ft_memcpy.c ft_memmove.c ft_strlcpy.c ft_strlcat.c \
+       ft_calloc.c ft_strdup.c ft_toupper.c ft_tolower.c \
+       ft_strchr.c ft_strncmp.c ft_memchr.c ft_memcmp.c \
+       ft_strnstr.c ft_atoi.c ft_strrchr.c ft_substr.c \
+       ft_strjoin.c ft_split.c ft_strtrim.c  ft_itoa.c \
+       ft_strmapi.c ft_striteri.c ft_putchar_fd.c \
+       ft_putstr_fd.c ft_putendl_fd.c ft_putnbr_fd.c ft_memdel.c\
+       ft_strcmp.c ft_putendl.c ft_strisnum.c ft_putstr.c ft_skip_spacenl.c\
+       ft_skip_space.c
+
+SRCSB	= ft_lstadd_back.c ft_lstadd_front.c ft_lstclear.c \
+	ft_lstdelone.c ft_lstiter.c ft_lstlast.c \
+	ft_lstmap.c ft_lstnew.c ft_lstsize.c
+       
+OBJS = ${SRCS:.c=.o}
+OBJSB = ${SRCSB:.c=.o}
 NAME = libft.a
+LIBC = ar rcs
+CC = cc
+RM = rm -f
+CFLAGS = -Wall -Wextra -Werror
 
-CC = clang
+.c.o:
+	${CC} ${CFLAGS} -c $< -o ${<:.c=.o}
 
-CFLAGS = -Wall -Wextra -Werror -I includes/
+${NAME}: ${OBJS}
+	${LIBC} ${NAME} ${OBJS}
 
-HEADER = $(addsuffix .h, $(addprefix includes/, libutils get_next_line ft_printf))
+all: ${NAME}
 
-FTIS = alnum alpha ascii count digit in print space spacenl where
-
-FTSKIP = space spacenl char chars
-
-FTLST = add_back add_front clear delone iter last map new size
-
-FTMATH = abs nbrlen hexlen baselen power
-
-FTMEM = bzero calloc memccpy memchr memcmp memcpy memdel memmove memset
-
-FTPUT = char endl nbr str char_fd endl_fd nbr_fd str_fd
-
-FTSTR = chr cmp dup isnum join lcat lcpy len mapi ncmp nstr rchr trim
-
-FTSUB = ft_str/ft_substr ft_str/ft_split
-
-FTTO = tolower toupper atoi itoa
-
-FTEX = gnl/get_next_line printf/ft_printf
-
-FTPRF = flagger branch_csp branch_duxo put_c put_s put_du put_o put_x put_p
-
-SRC = $(addsuffix .c, $(addprefix ft_is/ft_is, $(FTIS))) \
-	$(addsuffix .c, $(addprefix ft_lst/ft_lst, $(FTLST))) \
-	$(addsuffix .c, $(addprefix ft_math/ft_, $(FTMATH))) \
-	$(addsuffix .c, $(addprefix ft_mem/ft_, $(FTMEM))) \
-	$(addsuffix .c, $(addprefix ft_put/ft_put, $(FTPUT))) \
-	$(addsuffix .c, $(addprefix ft_skip/ft_skip_, $(FTSKIP))) \
-	$(addsuffix .c, $(addprefix ft_str/ft_str, $(FTSTR)) $(FTSUB)) \
-	$(addsuffix .c, $(addprefix ft_to/ft_, $(FTTO))) \
-	$(addsuffix .c, $(addprefix ft_, $(FTEX))) \
-	$(addsuffix .c, $(addprefix ft_printf/ft_printf_, $(FTPRF))) \
-
-OBJ = $(SRC:.c=.o)
-
-all: $(NAME)
-
-
-$(NAME): $(OBJ)
-	@ar rc $(NAME) $^
-	@ranlib $(NAME)
-
-%.o: %.c
-	@${CC} ${CFLAGS} -c $< -o $@
-
+bonus: ${NAME} ${OBJSB}
+	${LIBC} ${NAME} ${OBJSB}
 clean:
-	@rm -f $(OBJ)
+	${RM} ${OBJS} ${OBJSB}
 
 fclean: clean
-	@rm -f $(NAME)
+	${RM} ${NAME} ${bonus} 
 
 re: fclean all
 
-norm:
-	norminette $(SRC) $(HEADER)
-
-.PHONY: all clean fclean re norm
+.PHONY : all bonus clean fclean re
