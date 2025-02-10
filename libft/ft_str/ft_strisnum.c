@@ -19,7 +19,7 @@ int	ft_strisnum(const char *str)
 	i = 0;
 	if (str == NULL)
 		return (0);
-	if (str[0] == '-')
+	if (str[0] == '-' || str[0] == '+')
 		i++;
 	while (str[i])
 	{
