@@ -28,7 +28,7 @@ int	is_valid_env(const char *env)
 		return (0);
 	while (env[i] && env[i] != '=')
 	{
-		if (ft_isalnum(env[i]) == 0)
+		if ((ft_isalnum(env[i]) == 0) && env[i] != '_')
 			return (-1);
 		i++;
 	}

@@ -23,7 +23,7 @@ int	ft_isalnum(int c)
 // int main ()
 // {
 // 	printf( "%d" , ft_isalnum('k'));
-// 	printf( "%d" , ft_isalnum(0));
-// 	printf( "%d" , ft_isalnum('\n'));
+// 	printf( "%d" , ft_isalnum('d'));
+// 	printf( "%d" , ft_isalnum('_'));
 // 	return (0);
 // }
